@@ -44,7 +44,7 @@ button:disabled{opacity:.35;cursor:not-allowed}
 .pm button{min-width:44px;padding:0}
 .go{background:var(--rust);border-color:var(--rust);color:#fff;width:100%}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+.stats{display:grid;grid-template-columns:minmax(0,1fr);gap:4px;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
 .stat{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center}
 .stat span{font-size:13px;color:var(--mute)}
 .phases{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
@@ -141,6 +141,30 @@ img.mini{width:24px;height:24px;border-radius:5px;vertical-align:-6px;margin-rig
 .scl strong{font:700 22px "Chakra Petch",sans-serif;text-align:right}.scl small{grid-column:1/-1}
 ol.r li{margin-bottom:4px}
 .stk{display:grid;gap:10px;margin-top:10px}.stk p.big{margin:6px 0 0;text-align:right;font:700 28px "Chakra Petch",sans-serif}
+
+/* layout robusto para celular */
+.exc{min-width:0;padding:6px 1px}.exc span{display:block;font-size:11px;overflow:hidden;white-space:nowrap}
+button{white-space:normal;overflow-wrap:anywhere;line-height:1.2}
+.srow{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:48px}
+.srow>span{font-size:15px;color:var(--ink)}.srow>span small{display:block;font-size:12px}
+.srow .num{font-size:22px;text-align:right}
+.srow .pm{flex:none;gap:4px}.srow .pm .num{min-width:40px;text-align:center}
+.gauge .pm{gap:4px}.gauge .pm button{flex:1 1 0;min-width:0;max-width:48px;min-height:40px;padding:0}
+.seg button{font-size:14px;padding:8px 6px}
+.foot .row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.foot button{font-size:14px;padding:8px 4px}
+.rtabs button{font-size:13px;line-height:1.15}
+.g{gap:6px}
+summary{list-style:none}summary::-webkit-details-marker{display:none}
+details.sec{border-top:1px solid var(--line)}details.sec:first-of-type{border-top:0}
+details.sec>summary{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 0;cursor:pointer;min-height:48px}
+details.sec>summary h3{margin:0}
+details.sec>summary::after,details.pc>summary::after{content:"";flex:none;width:10px;height:10px;border-right:2px solid var(--mute);border-bottom:2px solid var(--mute);transform:translateY(-3px) rotate(45deg);margin-right:6px;transition:transform .2s}
+details.sec[open]>summary::after,details.pc[open]>summary::after{transform:translateY(3px) rotate(225deg)}
+details.sec>.sb{padding-bottom:14px}details.sec>.sb>.tip:first-child,details.sec>.sb>.flow:first-child{margin-top:0}
+details.pc>summary{cursor:pointer}details.pc>summary h3{flex:1}
+.rtools{display:flex;justify-content:flex-end;margin-top:8px}.rtools button{min-height:36px;font-size:14px;padding:4px 10px;background:transparent}
+@media(prefers-reduced-motion:reduce){details summary::after{transition:none}}
 @media(prefers-reduced-motion:reduce){.bar i{transition:none}}
 </style>
 </head>
@@ -221,7 +245,7 @@ function mars(){
  const g=(lab,val,unit,pct,col,k,sub)=>`<div class="gauge"><small>${lab}</small><div class="num">${val}${unit}</div><div class="bar"><i style="width:${pct}%;background:${col}"></i></div><small>${sub}</small>
  <div class="pm" style="margin-top:6px"><button data-p="${k}" data-d="-1" aria-label="Diminuir ${lab}">−</button><button data-p="${k}" data-d="1" aria-label="Aumentar ${lab}">+</button></div></div>`;
  const rl=Math.max(0,25-S.round+(S.screen==="setup"?1:0)),need=left();
- const third=AUT()?`<span>Para terraformar</span><b class="num" style="font-size:24px">${need}</b><span>níveis faltando</span>`:`<span>Ritmo</span><b class="num" style="font-size:24px">${need?(rl?(need/rl).toFixed(1):"—"):"✓"}</b><span>níveis/rodada</span>`;
+ const third=AUT()?`<div class="srow"><span>Faltam para terraformar</span><b class="num">${need} níveis</b></div>`:`<div class="srow"><span>Ritmo necessário</span><b class="num">${need?(rl?(need/rl).toFixed(1):"—"):"✓"} <small style="display:inline">níveis/rodada</small></b></div>`;
  const me=S.tr+S.forest,bot=S.a.tr+S.a.vp;
  const score=S.screen==="setup"||S.screen==="over"?"":`<div class="scorebox"><button class="ghost" id="score" aria-expanded="${!!S.showScore}">${S.showScore?"Ocultar pontuação atual":"Mostrar pontuação atual"}</button>
  ${S.showScore?`<div class="scl"><span>Você</span><strong>${me} PV</strong><small>${S.tr} IT + ${S.forest} de florestas · sem as cartas</small></div>${AUT()?`<div class="scl"><span>Automa</span><strong>${bot} PV</strong><small>${S.a.tr} IT + ${S.a.vp} na pilha de PV</small></div>`:""}`:""}</div>`;
@@ -231,9 +255,9 @@ function mars(){
  ${g("Oceanos",S.oc,"/9",S.oc/9*100,"var(--sea)","oc",`${9-S.oc} restantes`)}
  </div>
  <div class="stats">
- <div class="stat"><span>Seu IT</span><div class="pm"><button data-p="tr" data-d="-1" aria-label="Diminuir IT">−</button><b class="num" style="font-size:24px">${S.tr}</b><button data-p="tr" data-d="1" aria-label="Aumentar IT">+</button></div></div>
- <div class="stat"><span>Florestas</span><div class="pm"><button data-p="forest" data-d="-1" aria-label="Diminuir florestas">−</button><b class="num" style="font-size:24px">${S.forest}</b><button data-p="forest" data-d="1" aria-label="Aumentar florestas">+</button></div><span>1 PV cada</span></div>
- <div class="stat">${third}</div>
+ <div class="srow"><span>Seu IT</span><div class="pm"><button data-p="tr" data-d="-1" aria-label="Diminuir IT">−</button><b class="num">${S.tr}</b><button data-p="tr" data-d="1" aria-label="Aumentar IT">+</button></div></div>
+ <div class="srow"><span>Peças de floresta <small>1 PV cada</small></span><div class="pm"><button data-p="forest" data-d="-1" aria-label="Diminuir florestas">−</button><b class="num">${S.forest}</b><button data-p="forest" data-d="1" aria-label="Aumentar florestas">+</button></div></div>
+ ${third}
  </div>
  <p class="tip">Os botões + são para os <strong>seus</strong> aumentos (cada nível dá +1 no seu IT).${AUT()?" Os do automa o app aplica sozinho.":""}</p>${score}</section>`;
 }
@@ -241,7 +265,7 @@ function mars(){
 function botBoard(){
  if(!AUT()||S.screen==="setup")return "";
  const a=S.a,cub=`${'<i class="ag"></i>'.repeat(ag(a.c))}${'<i class="cu"></i>'.repeat(a.c%5)}`;
- const ed=(k,l)=>`<div class="stat"><span>${l}</span><div class="pm"><button data-a="${k}" data-d="-1" aria-label="Diminuir ${l}">−</button><b class="num" style="font-size:20px">${a[k]}</b><button data-a="${k}" data-d="1" aria-label="Aumentar ${l}">+</button></div></div>`;
+ const ed=(k,l)=>`<div class="srow"><span>${l}</span><div class="pm"><button data-a="${k}" data-d="-1" aria-label="Diminuir ${l}">−</button><b class="num">${a[k]}</b><button data-a="${k}" data-d="1" aria-label="Aumentar ${l}">+</button></div></div>`;
  return `<section class="card bot"><div class="row" style="justify-content:space-between"><h2>Tabuleiro do automa</h2><small>${LV[S.lvl-1]}</small></div>
  <div class="g" style="margin-top:12px;text-align:center">
  <div><small>Reserva</small><div class="num" style="font-size:22px">${ag(a.c)} <span style="color:var(--ag)">prata</span></div><small>+ ${a.c%5} cobre</small><div class="cubes" style="margin-top:6px">${cub}</div></div>
@@ -400,11 +424,12 @@ function rulesView(){
  const nav=`<div class="rtabs" role="tablist">${tabs.map(([k,l])=>`<button role="tab" aria-selected="${S.rtab===k}" data-rt="${k}" class="${S.rtab===k?"sel":""}">${l}</button>`).join("")}</div>`;
  const cube=(k,n=1)=>`<span class="cb ${k}"></span>`.repeat(n);
  const flow=(arr)=>`<div class="flow">${arr.map((x,i)=>`<div class="fl"><span class="fn">${i+1}</span><div><h3>${x[0]}</h3><p>${x[1]}</p></div></div>`).join("")}</div>`;
- const phCard=(f,i,rows)=>`<div class="pc p${i}"><div class="pch"><img src="${PHIMG[i]}" alt="Fase ${f.n}"><h3>${f.t}</h3></div>${rows.map(r=>`<div class="pcr"><span class="k ${r[2]||""}">${r[0]}</span><p>${r[1]}</p></div>`).join("")}</div>`;
+ const phCard=(f,i,rows)=>`<details class="pc p${i}"><summary class="pch"><img src="${PHIMG[i]}" alt="Fase ${f.n}"><h3>${f.n} · ${f.t}</h3></summary>${rows.map(r=>`<div class="pcr"><span class="k ${r[2]||""}">${r[0]}</span><p>${r[1]}</p></div>`).join("")}</details>`;
  const scoreYou=`<ol class="r"><li>1 PV por IT.</li><li>PV igual aos PVs mostrados nas peças de floresta (1 PV cada).</li><li>PV igual ao que está impresso nas cartas de projeto que você jogou, incluindo as cartas com PV variável, indicado com um asterisco (*).</li></ol>`;
  let body="";
  if(S.rtab==="rodada"){
-  body=`<h2>Uma rodada em 4 etapas</h2>
+  body=`<h2>Rodada</h2><p class="tip">Toque em cada parte para abrir.</p>
+  <h3 style="margin-top:18px">Uma rodada em 4 etapas</h3>
   ${flow([["Você escolhe 1 fase","Toque numa carta de fase. Você não pode escolher a mesma fase em duas rodadas seguidas."],
    ["O automa revela 1 fase","O app tira a carta dele. Essa fase também acontece para você, mas <strong>sem bônus</strong>."],
    ["Resolvem-se as fases escolhidas","Sempre na ordem I → V. Fases que ninguém escolheu não acontecem."],
@@ -490,7 +515,9 @@ function rulesView(){
   <p class="tip">Se Marte estiver totalmente terraformado, ou seja, se todos os parâmetros tiverem atingido o nível máximo, você ganha. Caso contrário, você perde. Por fim, some seus PV, tentando alcançar a pontuação mais alta possível:</p>
   ${scoreYou}`;
  }
- return `<section class="card">${nav}<div style="margin-top:16px">${body}</div><button class="go" id="back" style="margin-top:18px">Voltar ao jogo</button></section>`;
+ const H='<h3 style="margin-top:18px">',parts=body.split(H);
+ body=parts[0]+parts.slice(1).map(x=>{const k=x.indexOf("</h3>");return `<details class="sec"><summary><h3>${x.slice(0,k)}</h3></summary><div class="sb">${x.slice(k+5)}</div></details>`}).join("");
+ return `<section class="card">${nav}<div class="rtools"><button id="xall">Abrir tudo</button></div><div style="margin-top:4px">${body}</div><button class="go" id="back" style="margin-top:18px">Voltar ao jogo</button></section>`;
 }
 
 function draw(){
@@ -533,6 +560,7 @@ app.addEventListener("click",e=>{
  if(d.bn)return set(()=>{if(S.bonusLeft>0&&bump(d.bn,1,false))S.bonusLeft--});
  if(b.id==="bdone")return set(()=>{S.bonusLeft=0;S.screen="choose"});
  if(b.id==="again"){snap();const m=S.mode,l=S.lvl,df=S.diff,src=S.deckSrc;S=fresh();Object.assign(S,{mode:m,lvl:l,diff:df,deckSrc:src});save();draw();return}
+ if(b.id==="xall"){const ds=[...app.querySelectorAll("section.card details")],open=!ds.every(x=>x.open);ds.forEach(x=>x.open=open);b.textContent=open?"Fechar tudo":"Abrir tudo";return}
  if(b.id==="score")return set(()=>S.showScore=!S.showScore);
  if(d.rt){S.rtab=d.rt;save();draw();return}
  if(b.id==="back"){showRules=false;draw();scrollTo(0,0)}
